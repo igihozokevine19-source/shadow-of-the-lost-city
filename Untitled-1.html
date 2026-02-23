@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+            <style>
+            body{
+                margin: 0;
+                text-align:center;
+                background:#880e0e;
+            }
+            canvas{
+                border: 2px solid black;
+                border: 2px solid yellow;
+                border: 2px solid green;
+                background:#fffafa;
+                cursor:crosshair;
+                margin: top 20px;
+            }
+            </style>
+</head>
+<body>
+    <H2>Mini  dark  painting App</H2>
+    <button onclick="gleen()" id="gleen">gleen</button>
+    <button onclick="gray()"  id="gray">gray</button>
+    <button onclick="yellow()" id="yelloe">yellow</button>
+    <canvas id="paintCanvas"width="800" height="500">
+    </canvas>
+    <script>
+        const canvas=document.getElementById("paintCanvas");
+        const ctx=canvas.getContext("2d");
+        let isDrawing=false;
+        //start drawing
+        canvas.addEventListener("mousedown",(e) => {
+        isDrawing = true;
+        ctx.beginPath();
+        ctx.moveTo(e.offsetX,e.offsetY);
+        });
+
+        canvas.addEventListener("mousemove", (e) => {
+            if(!isDrawing)return;
+            ctx.lineTo(e.offsetX,e.offsetY);
+            ctx.strokeStyle = "black";
+            ctx.strokeStlyle ="yellow";
+            ctx.strokeStlye ="gray";
+            ctx.lineWidth = 3;
+            ctx.lineCap = "round";
+            ctx.stroke();
+        });
+        //STOP drawing
+        canvas.addEventListener("mouseup",()=>{
+            isDrawing=false;
+        });
+        //STOP drawing if mouse leavds canvas
+        canvas.addEventListener("mouseleave",()=>{
+            isDrawing=false;
+        });
+        </script>
+</body>
+</html>

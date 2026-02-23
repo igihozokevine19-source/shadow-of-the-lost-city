@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Treasure Hunt</title>
+<style>
+  body { text-align:center; background:#222; color:#fff; font-family:sans-serif; }
+  #game { position:relative; width:400px; height:300px; margin:20px auto; background:#444; }
+  .player, .coin, .rock { position:absolute; width:20px; height:20px; }
+  .player { background:green; bottom:0; left:190px; }
+  .coin { background:yellow; top:0; left:100px; }
+  .rock { background:red; top:0; left:250px; }
+</style>
+</head>
+<body>
+
+<h1>Treasure Hunt</h1>
+<p>Score: <span id="score">0</span></p>
+<div id="game">
+  <div class="player" id="player"></div>
+  <div class="coin" id="coin"></div>
+  <div class="rock" id="rock"></div>
+</div>
+<p>Use LEFT and RIGHT arrow keys to move</p>
+
+<script>
+const player = document.getElementById('player');
+const coin = document.getElementById('coin');
+const rock = document.getElementById('rock');
+const scoreEl = document.getElementById('score');
+
+let score = 0;
+let playerPos = 190;
+
+function randomPosition() {
+    return Math.floor(Math.random() * 380);
+}
+
+function moveObjects() {
+    coin.style.top = (parseInt(coin.style.top) || 0) + 5 + 'px';
+    rock.style.top = (parseInt(rock.style.top) || 0) + 7 + 'px';
+
+    if(parseInt(coin.style.top) > 280) {
+        coin.style.top = '0px';
+        coin.style.left = randomPosition() + 'px';
+    }
+    if(parseInt(rock.style.top) > 280) {
+        rock.style.top = '0px';
+        rock.style.left = randomPosition() + 'px';
+    }
+
+    // Collision detection
+    const pLeft = playerPos;
+    const pRight = playerPos + 20;
+    const cLeft = parseInt(coin.style.left);
+    const cRight = cLeft + 20;
+    const rLeft = parseInt(rock.style.left);
+    const rRight = rLeft + 20;
+    const cTop = parseInt(coin.style.top);
+    const rTop = parseInt(rock.style.top);
+
+    if(cTop >= 280 && ((pLeft < cRight && pRight > cLeft))) {
+        score += 1;
+        scoreEl.textContent = score;
+        coin.style.top = '0px';
+        coin.style.left = randomPosition() + 'px';
+    }
+
+    if(rTop >= 280 && ((pLeft < rRight && pRight > rLeft))) {
+        alert("Game Over! Final Score: " + score);
+        score = 0;
+        scoreEl.textContent = score;
+        rock.style.top = '0px';
+        coin.style.top = '0px';
+    }
+}
+
+document.addEventListener('keydown', e => {
+    if(e.key === 'ArrowLeft' && playerPos > 0) playerPos -= 20;
+    if(e.key === 'ArrowRight' && playerPos < 380) playerPos += 20;
+    player.style.left = playerPos + 'px';
+});
+
+setInterval(moveObjects, 50);
+</script>
+
+</body>
+</html>
