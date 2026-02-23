@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Shadow of the Lost City</title>
+    <style>
+        body { margin: 50; background: black; }
+        canvas {
+            display: block;
+            margin: auto;
+            background: #111;
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="gameCanvas" width="800" height="400"></canvas>
+
+<script>
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+
+// Player
+let player = {
+    x: 50,
+    y: 200,
+    width: 40,
+    height: 40,
+    speed: 4,
+    health: 100
+};
+
+// Enemy
+let enemy = {
+    x: 700,
+    y: 200,
+    width: 40,
+    height: 40,
+    speed: 1.5
+};
+
+// Keys
+let keys = [
+    {x: 200, y: 100, width: 25, height: 25, collected: false},
+    {x: 400, y: 300, width: 25, height: 25, collected: false},
+    {x: 600, y: 150, width: 25, height: 25, collected: false},
+];
+
+let keysCollected = 0;
+let gameOver = false;
+let gameWin = false;
+
+// Keyboard
+let keysPressed = {};
+
+document.addEventListener("keydown", e => keysPressed[e.key] = true);
+document.addEventListener("keyup", e => keysPressed[e.key] = false);
+
+// Collision
+function isColliding(a, b) {
+    return a.x < b.x + b.width &&
+           a.x + a.width > b.x &&
+           a.y < b.y + b.height &&
+           a.y + a.height > b.y;
+}
+
+function update() {
+
+    if (gameOver || gameWin) {
+        drawEndScreen();
+        return;
+    }
+
+    // Movement
+    if (keysPressed["ArrowUp"]) player.y -= player.speed;
+    if (keysPressed["ArrowDown"]) player.y += player.speed;
+    if (keysPressed["ArrowLeft"]) player.x -= player.speed;
+    if (keysPressed["ArrowRight"]) player.x += player.speed;
+
+    // Enemy follows player
+    if (player.x < enemy.x) enemy.x -= enemy.speed;
+    if (player.x > enemy.x) enemy.x += enemy.speed;
+    if (player.y < enemy.y) enemy.y -= enemy.speed;
+    if (player.y > enemy.y) enemy.y += enemy.speed;
+
+    // Clear
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Draw Player
+    ctx.fillStyle = "cyan";
+    ctx.fillRect(player.x, player.y, player.width, player.height);
+
+    // Draw Enemy
+    ctx.fillStyle = "red";
+    ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
+
+    // Draw Keys
+    ctx.fillStyle = "yellow";
+    keys.forEach(key => {
+        if (!key.collected) {
+            ctx.fillRect(key.x, key.y, key.width, key.height);
+        }
+    });
+
+    // Check Key Collection
+    keys.forEach(key => {
+        if (!key.collected && isColliding(player, key)) {
+            key.collected = true;
+            keysCollected++;
+        }
+    });
+
+    // Enemy collision
+    if (isColliding(player, enemy)) {
+        player.health -= 1;
+    }
+
+    // Health display
+    ctx.fillStyle = "white";
+    ctx.font = "20px Arial";
+    ctx.fillText("Health: " + player.health, 10, 25);
+    ctx.fillText("Keys: " + keysCollected + "/3", 10, 55);
+
+    if (player.health <= 0) {
+        gameOver = true;
+    }
+
+    if (keysCollected === 3) {
+        gameWin = true;
+    }
+
+    requestAnimationFrame(update);
+}
+
+function drawEndScreen() {
+    ctx.fillStyle = "white";
+    ctx.font = "40px Arial";
+    if (gameOver) {
+        ctx.fillText("GAME OVER 💀☠", 280, 200);
+    }
+    if (gameWin) {
+        ctx.fillText("GOOD JOB 🎉🤩", 200, 200);
+    }
+}
+
+update();
+</script>
+
+</body>
+</html>
+
